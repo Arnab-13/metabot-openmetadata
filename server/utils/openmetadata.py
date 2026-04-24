@@ -35,7 +35,7 @@ async def get_table_details(fqn: str):
         resp = await client.get(
             f"{BASE_URL}/api/v1/tables/name/{fqn}",
             params={
-                "fields": "columns,tableConstraints,owner,tags,followers"
+                "fields": "columns,tableConstraints,owners,tags,followers"
             },
             headers=HEADERS,
             timeout=30.0
