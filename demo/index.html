@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MetaBot — AI Data Catalog Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">M</div>
+    <div class="logo-text">Meta<span>Bot</span></div>
+  </div>
+  <div class="header-right">
+    <div class="status-dot">
+      <div class="dot" id="statusDot"></div>
+      <span id="statusText">connecting...</span>
+    </div>
+    <div class="server-url" id="serverUrlDisplay">localhost:8001</div>
+    <button class="config-btn" onclick="openConfig()">⚙ config</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Example queries</div>
+      <button class="example-btn" onclick="sendExample(this)">
+        <div><span class="intent-tag tag-search-s">SEARCH</span></div>
+        Show me tables related to orders
+      </button>
+      <button class="example-btn" onclick="sendExample(this)">
+        <div><span class="intent-tag tag-pii-s">PII</span></div>
+        Does the customer table have sensitive columns?
+      </button>
+      <button class="example-btn" onclick="sendExample(this)">
+        <div><span class="intent-tag tag-owner-s">OWNERS</span></div>
+        Which tables have missing owners?
+      </button>
+      <button class="example-btn" onclick="sendExample(this)">
+        <div><span class="intent-tag tag-lineage-s">LINEAGE</span></div>
+        What is the lineage of fact_order?
+      </button>
+      <button class="example-btn" onclick="sendExample(this)">
+        <div><span class="intent-tag tag-search-s">SEARCH</span></div>
+        Find tables related to customers
+      </button>
+      <button class="example-btn" onclick="sendExample(this)">
+        <div><span class="intent-tag tag-pii-s">PII</span></div>
+        Scan raw_customer for personal data
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Session stats</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="queryCount">0</div>
+          <div class="stat-label">Queries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="tableCount">0</div>
+          <div class="stat-label">Tables found</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Intents</div>
+      <div style="font-size:11px; color: var(--text3); line-height: 1.8;">
+        <div>🔍 <span style="color:var(--text2)">search</span> — find tables</div>
+        <div>🔐 <span style="color:var(--text2)">pii</span> — sensitive data</div>
+        <div>👤 <span style="color:var(--text2)">owners</span> — governance</div>
+        <div>🔗 <span style="color:var(--text2)">lineage</span> — data flow</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-logo">M</div>
+        <h1>Ask <span>MetaBot</span> anything</h1>
+        <p>Natural language queries for your OpenMetadata catalog. Find tables, detect PII, trace lineage, and audit governance — just by asking.</p>
+        <div class="welcome-chips">
+          <div class="chip" onclick="useChip(this)">Show me order tables</div>
+          <div class="chip" onclick="useChip(this)">Which tables have missing owners?</div>
+          <div class="chip" onclick="useChip(this)">Scan customer table for PII</div>
+          <div class="chip" onclick="useChip(this)">Lineage of fact_order</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <textarea
+          id="inputBox"
+          placeholder="Ask about your data catalog..."
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2 21L23 12 2 3v7l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">
+        Press <kbd>Enter</kbd> to send &nbsp;·&nbsp; <kbd>Shift+Enter</kbd> for new line
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Config Modal -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <h3>⚙ Server Configuration</h3>
+    <label>MetaBot Server URL</label>
+    <input type="text" id="serverUrlInput" value="http://localhost:8001" placeholder="http://localhost:8001"/>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeConfig()">Cancel</button>
+      <button class="btn-save" onclick="saveConfig()">Save & reconnect</button>
+    </div>
+  </div>
+</div>
+
+<script src="jscript.js"></script>
+</body>
+</html>
