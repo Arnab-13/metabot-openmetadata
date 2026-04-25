@@ -1,5 +1,5 @@
 // ── State ─────────────────────────────────────────────────
-  let SERVER_URL = localStorage.getItem('metabot_url') || 'http://localhost:8001';
+  let SERVER_URL = localStorage.getItem('metabot_url') || 'http://172.28.34.93:8001';
   let totalQueries = 0;
   let totalTables = 0;
   let isLoading = false;
