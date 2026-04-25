@@ -68,11 +68,13 @@ async def ask_ollama(prompt: str) -> str:
 # ── Query router ─────────────────────────────────────────────────────────────
 
 def detect_intent(question: str) -> str:
-    """
-    Detect what the user is asking about based on keywords.
-    Returns one of: lineage, missing_owners, pii, search
-    """
-    q = question.lower()
+    q = question.lower().strip()
+
+    # Greeting detection
+    greetings = ["hi", "hello", "hey", "howdy", "sup", "what's up",
+                 "how are you", "good morning", "good evening", "good afternoon"]
+    if any(q == g or q.startswith(g) for g in greetings):
+        return "greeting"
 
     if any(w in q for w in ["lineage", "upstream", "downstream", "flow", "pipeline", "source"]):
         return "lineage"
@@ -111,6 +113,28 @@ def extract_table_hint(question: str) -> str:
 
 
 # ── Route handlers ───────────────────────────────────────────────────────────
+
+async def handle_greeting(question: str) -> QueryResponse:
+    prompt = f"""You are MetaBot, an AI assistant for OpenMetadata data catalogs.
+The user said: "{question}"
+
+Respond with a friendly greeting. Introduce yourself briefly as MetaBot.
+Mention you can help with:
+- Finding tables in the data catalog
+- Detecting PII and sensitive columns
+- Checking data lineage
+- Finding tables with missing owners
+
+Keep it short, friendly, and under 80 words."""
+
+    answer = await ask_ollama(prompt)
+    return QueryResponse(
+        question=question,
+        answer=answer,
+        tool_used="search",
+        tables_found=0
+    )
+
 
 async def handle_lineage(question: str) -> QueryResponse:
     hint = extract_table_hint(question)
@@ -304,7 +328,9 @@ async def handle_query(req: QueryRequest):
 
     intent = detect_intent(req.question)
 
-    if intent == "lineage":
+    if intent == "greeting":
+        return await handle_greeting(req.question)
+    elif intent == "lineage":
         return await handle_lineage(req.question)
     elif intent == "missing_owners":
         return await handle_missing_owners(req.question)
